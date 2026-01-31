@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+ava/data/memory.json
+tests/test_ava_data/
+tests/test_data_memory/
