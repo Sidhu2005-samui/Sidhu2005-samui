@@ -1,0 +1,59 @@
+{
+    "reminders": [],
+    "birthdays": {
+        "Bob": "October 5th"
+    },
+    "tasks": [
+        {
+            "description": "Buy groceries",
+            "completed": false
+        }
+    ],
+    "preferences": {
+        "frequent_contacts": {
+            "Sion": 2
+        },
+        "research_count": 2
+    },
+    "history": [
+        {
+            "type": "call",
+            "details": {
+                "name": "Sion"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "ai"
+            }
+        },
+        {
+            "type": "call",
+            "details": {
+                "name": "Sion"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        },
+        {
+            "type": "memory",
+            "details": {
+                "action": "add_task",
+                "task": "Buy groceries"
+            }
+        },
+        {
+            "type": "memory",
+            "details": {
+                "action": "add_birthday",
+                "name": "Bob",
+                "date": "October 5th"
+            }
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "reminders": [
+        {
+            "text": "Meeting",
+            "time": "14:00"
+        }
+    ],
+    "birthdays": {
+        "Alice": "1990-01-01"
+    },
+    "tasks": [
+        {
+            "description": "Buy milk",
+            "completed": false
+        }
+    ],
+    "preferences": {},
+    "history": []
+}

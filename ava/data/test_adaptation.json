@@ -1,0 +1,62 @@
+{
+    "reminders": [],
+    "birthdays": {},
+    "tasks": [],
+    "preferences": {
+        "frequent_contacts": {
+            "Sion": 2
+        },
+        "research_count": 6,
+        "preferred_summary_length": "detailed"
+    },
+    "history": [
+        {
+            "type": "call",
+            "details": {
+                "name": "Sion"
+            }
+        },
+        {
+            "type": "call",
+            "details": {
+                "name": "Sion"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "AI"
+            }
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "reminders": [],
+    "birthdays": {},
+    "tasks": [
+        {
+            "description": "Buy eggs",
+            "completed": false,
+            "added_at": "2026-02-03 14:01"
+        }
+    ],
+    "preferences": {},
+    "history": [
+        {
+            "type": "memory",
+            "details": {
+                "action": "add_task",
+                "task": "Buy eggs"
+            }
+        }
+    ]
+}

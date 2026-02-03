@@ -1,0 +1,66 @@
+{
+    "reminders": [],
+    "birthdays": {
+        "Alice": "January 1st"
+    },
+    "tasks": [
+        {
+            "description": "Plan a surprise party",
+            "completed": false,
+            "added_at": "2026-02-03 14:00"
+        }
+    ],
+    "preferences": {
+        "frequent_contacts": {
+            "Sion": 2
+        },
+        "research_count": 1
+    },
+    "history": [
+        {
+            "type": "call",
+            "details": {
+                "name": "Sion"
+            }
+        },
+        {
+            "type": "research",
+            "details": {
+                "topic": "Space Exploration"
+            }
+        },
+        {
+            "type": "memory",
+            "details": {
+                "action": "add_task",
+                "task": "Plan a surprise party"
+            }
+        },
+        {
+            "type": "memory",
+            "details": {
+                "action": "add_birthday",
+                "name": "Alice",
+                "date": "January 1st"
+            }
+        },
+        {
+            "type": "whatsapp",
+            "details": {
+                "recipient": "Sion"
+            }
+        },
+        {
+            "type": "instagram",
+            "details": {
+                "action": "auto_comment"
+            }
+        },
+        {
+            "type": "call",
+            "details": {
+                "name": "Sion"
+            }
+        }
+    ]
+}
