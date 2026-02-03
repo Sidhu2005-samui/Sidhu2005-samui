@@ -4,6 +4,7 @@ from ava.modules.phone import PhoneModule
 from ava.modules.whatsapp import WhatsAppModule
 from ava.modules.instagram import InstagramModule
 from ava.modules.research import ResearchModule
+from ava.modules.chess import ChessModule
 
 class AvaEngine:
     def __init__(self):
@@ -12,6 +13,7 @@ class AvaEngine:
         self.whatsapp = WhatsAppModule()
         self.instagram = InstagramModule()
         self.research = ResearchModule()
+        self.chess = ChessModule()
 
     def process_input(self, user_input):
         user_input = user_input.strip()
@@ -88,7 +90,11 @@ class AvaEngine:
                 self.memory.set_preference(key, val)
                 return f"Understood. I've updated your preference for '{key}' to '{val}'."
 
-        # 7. Status / Adaptation info
+        # 7. Chess
+        if re.search(r'\bplay chess\b|\bstart chess\b', user_input, re.I):
+            return self.chess.start_game()
+
+        # 8. Status / Adaptation info
         if "status" in user_input.lower() or "how are you" in user_input.lower():
             return self.get_summary()
 

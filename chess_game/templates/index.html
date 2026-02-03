@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Chess</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: sans-serif; background-color: #222; color: #fff; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let clicks pass through to canvas */
+        }
+
+        .pointer-events-auto { pointer-events: auto; }
+
+        #main-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #game-hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: right;
+        }
+
+        button, select, input {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #444;
+            color: white;
+            font-size: 14px;
+        }
+        button:hover { background: #555; }
+        button.primary { background: #007bff; }
+        button.primary:hover { background: #0069d9; }
+
+        .hidden { display: none !important; }
+    </style>
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div id="main-menu" class="pointer-events-auto">
+            <h1>3D Chess</h1>
+
+            <h3>Single Player</h3>
+            <label>Difficulty: <select id="ai-difficulty">
+                <option value="1">Easy</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">Hard</option>
+            </select></label>
+            <br>
+            <button class="primary" onclick="startGame('single')">Play vs AI</button>
+
+            <hr>
+
+            <h3>Multiplayer</h3>
+            <input type="text" id="room-code" placeholder="Enter Room Code" value="default">
+            <br>
+            <button class="primary" onclick="startGame('multi')">Play Online</button>
+            <button class="primary" onclick="startGame('local')">Local Play</button>
+        </div>
+
+        <div id="game-hud" class="pointer-events-auto">
+            <h2 id="status-text">White's Turn</h2>
+            <div id="analysis-output"></div>
+            <button onclick="requestAnalysis()">Analyze Position</button>
+            <button onclick="requestHint()">Get Hint</button>
+            <button onclick="resetGame()">Reset Game</button>
+            <button onclick="showMenu()">Main Menu</button>
+        </div>
+
+        <div id="controls" class="pointer-events-auto">
+             <label>Board Color 1: <input type="color" id="color-board-1" value="#ffffff" onchange="updateColors()"></label><br>
+             <label>Board Color 2: <input type="color" id="color-board-2" value="#444444" onchange="updateColors()"></label><br>
+             <label>White Pieces: <input type="color" id="color-white" value="#eeeeee" onchange="updateColors()"></label><br>
+             <label>Black Pieces: <input type="color" id="color-black" value="#111111" onchange="updateColors()"></label>
+        </div>
+    </div>
+
+    <script src="/static/main.js"></script>
+</body>
+</html>
