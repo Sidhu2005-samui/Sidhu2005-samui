@@ -22,9 +22,13 @@ class MemoryManager:
                 "reminders": [],
                 "tasks": [],
                 "preferences": {},
-                "habits": {}
+                "habits": {},
+                "notes": []
             }
             self.save_memory()
+
+        if "notes" not in self.data:
+            self.data["notes"] = []
 
     def save_memory(self):
         with open(self.memory_file, "w") as f:
@@ -42,6 +46,13 @@ class MemoryManager:
         self.data["tasks"].append({"text": text, "completed": False})
         self.save_memory()
 
+    def add_note(self, content):
+        self.data["notes"].append({
+            "content": content,
+            "timestamp": datetime.now().isoformat()
+        })
+        self.save_memory()
+
     def set_preference(self, key, value):
         self.data["preferences"][key] = value
         self.save_memory()
@@ -54,6 +65,9 @@ class MemoryManager:
 
     def get_tasks(self):
         return self.data["tasks"]
+
+    def get_notes(self):
+        return self.data.get("notes", [])
 
     def get_preference(self, key, default=None):
         return self.data["preferences"].get(key, default)

@@ -23,7 +23,16 @@ class AvaEngine:
         # Track habits more intelligently
         self.track_habit_context(user_input)
 
-        # 1. Phone Calls
+        # 1. Notes (Higher priority to capture "save note call x")
+        if re.search(r'\b(save note|take a note|note down)\b', user_input, re.I):
+            match = re.search(r'(?:save note|take a note|note down)\s+(.+)', user_input, re.I)
+            if match:
+                content = match.group(1).strip()
+                self.memory.add_note(content)
+                return "I've saved that note for you."
+            return "What would you like me to note down?"
+
+        # 2. Phone Calls
         if re.search(r'\bcall\b', user_input, re.I):
             match = re.search(r'call\s+([\w\s]+)', user_input, re.I)
             if match:
@@ -81,7 +90,7 @@ class AvaEngine:
                 return self.instagram.comment_on_post(url)
             return "Please provide a valid Instagram post URL for me to comment on."
 
-        # 6. Preferences
+        # 7. Preferences
         if re.search(r'\bset preference\b', user_input, re.I):
             match = re.search(r'set preference\s+(\w+)\s+to\s+(.+)', user_input, re.I)
             if match:
@@ -90,11 +99,11 @@ class AvaEngine:
                 self.memory.set_preference(key, val)
                 return f"Understood. I've updated your preference for '{key}' to '{val}'."
 
-        # 7. Chess
+        # 8. Chess
         if re.search(r'\bplay chess\b|\bstart chess\b', user_input, re.I):
             return self.chess.start_game()
 
-        # 8. Status / Adaptation info
+        # 9. Status / Adaptation info
         if "status" in user_input.lower() or "how are you" in user_input.lower():
             return self.get_summary()
 
