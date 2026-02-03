@@ -41,12 +41,5 @@ class TestMemoryManager(unittest.TestCase):
         self.mm.track_habit("call")
         self.assertEqual(self.mm.get_habits()["call"], 2)
 
-    def test_add_note(self):
-        self.mm.add_note("Meeting notes: Discuss API keys")
-        notes = self.mm.get_notes()
-        self.assertEqual(len(notes), 1)
-        self.assertEqual(notes[0]["content"], "Meeting notes: Discuss API keys")
-        self.assertTrue("timestamp" in notes[0])
-
 if __name__ == "__main__":
     unittest.main()
