@@ -1,5 +1,6 @@
 import json
 import os
+import atexit
 from datetime import datetime
 
 class MemoryManager:
@@ -10,7 +11,10 @@ class MemoryManager:
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
         self.memory_file = os.path.join(self.data_dir, "memory.json")
+        self.habit_buffer_count = 0
+        self.habit_buffer_limit = 50
         self.load_memory()
+        atexit.register(self.flush)
 
     def load_memory(self):
         if os.path.exists(self.memory_file):
@@ -62,7 +66,20 @@ class MemoryManager:
         if command not in self.data["habits"]:
             self.data["habits"][command] = 0
         self.data["habits"][command] += 1
-        self.save_memory()
+
+        self.habit_buffer_count += 1
+        if self.habit_buffer_count >= self.habit_buffer_limit:
+            self.save_memory()
+            self.habit_buffer_count = 0
+
+    def flush(self):
+        """Force save memory to disk."""
+        try:
+            self.save_memory()
+            self.habit_buffer_count = 0
+        except (FileNotFoundError, OSError):
+            # Handle cases where directory might be missing (e.g. tests)
+            pass
 
     def get_habits(self):
         return self.data["habits"]
