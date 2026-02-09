@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting to Payment Gateway...</title>
+</head>
+<body>
+    <center>
+        <h1>Redirecting to Paytm...</h1>
+        <p>Please do not refresh this page.</p>
+        <form method="post" action="{{ txn_url }}" name="paytm">
+            {% for key, value in params.items() %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+        </form>
+        <script type="text/javascript">
+            document.paytm.submit();
+        </script>
+    </center>
+</body>
+</html>
