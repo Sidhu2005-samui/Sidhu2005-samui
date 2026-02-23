@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import chess
 from game_logic import ChessAI
 import os
+import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
@@ -11,6 +12,28 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Store game states: { room_id: { 'board': chess.Board(), 'white': session_id, 'black': session_id } }
 games = {}
 ai = ChessAI()
+
+GAME_TTL = int(os.environ.get('GAME_TTL', 3600))
+CLEANUP_INTERVAL = int(os.environ.get('CLEANUP_INTERVAL', 60))
+
+def cleanup_games():
+    """Periodically clean up stale games to prevent memory leaks."""
+    while True:
+        socketio.sleep(CLEANUP_INTERVAL)
+        now = time.time()
+        expired_rooms = []
+        # Create a copy of keys to iterate safely
+        for room, game in list(games.items()):
+            last_active = game.get('last_active', 0)
+            if now - last_active > GAME_TTL:
+                expired_rooms.append(room)
+
+        for room in expired_rooms:
+            if room in games:
+                del games[room]
+                print(f"Cleaned up stale game: {room}")
+
+socketio.start_background_task(cleanup_games)
 
 @app.route('/')
 def index():
@@ -32,9 +55,11 @@ def on_join(data):
             'board': chess.Board(),
             'mode': mode,
             'white': None,
-            'black': None
+            'black': None,
+            'last_active': time.time()
         }
 
+    games[room]['last_active'] = time.time()
     game = games[room]
 
     # Assign colors for multiplayer
@@ -59,6 +84,7 @@ def on_move(data):
     move_uci = data.get('move')
 
     if room in games:
+        games[room]['last_active'] = time.time()
         board = games[room]['board']
         try:
             move = chess.Move.from_uci(move_uci)
@@ -91,6 +117,7 @@ def on_ai_move(data):
     difficulty = int(data.get('difficulty', 2))
 
     if room in games:
+        games[room]['last_active'] = time.time()
         board = games[room]['board']
         if not board.is_game_over():
             best_move = ai.get_best_move(board, depth=difficulty)
@@ -110,6 +137,7 @@ def on_ai_move(data):
 def on_analysis(data):
     room = data.get('room')
     if room in games:
+        games[room]['last_active'] = time.time()
         board = games[room]['board']
         score = ai.evaluate_board(board)
         emit('analysis_result', {'score': score}, room=request.sid)
@@ -118,6 +146,7 @@ def on_analysis(data):
 def on_hint(data):
     room = data.get('room')
     if room in games:
+        games[room]['last_active'] = time.time()
         board = games[room]['board']
         if not board.is_game_over():
             best_move = ai.get_best_move(board, depth=3)
@@ -128,6 +157,7 @@ def on_hint(data):
 def on_reset(data):
     room = data.get('room')
     if room in games:
+        games[room]['last_active'] = time.time()
         games[room]['board'].reset()
         emit('board_state', {'fen': games[room]['board'].fen()}, room=room)
 
