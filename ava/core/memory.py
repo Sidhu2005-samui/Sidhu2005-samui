@@ -1,5 +1,6 @@
 import json
 import os
+import atexit
 from datetime import datetime
 
 class MemoryManager:
@@ -10,6 +11,9 @@ class MemoryManager:
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
         self.memory_file = os.path.join(self.data_dir, "memory.json")
+        self.update_count = 0
+        self.BUFFER_LIMIT = 50
+        atexit.register(self.flush_memory)
         self.load_memory()
 
     def load_memory(self):
@@ -24,11 +28,19 @@ class MemoryManager:
                 "preferences": {},
                 "habits": {}
             }
-            self.save_memory()
+            self.flush_memory()
 
-    def save_memory(self):
+    def flush_memory(self):
+        if not os.path.exists(self.data_dir):
+            return
         with open(self.memory_file, "w") as f:
             json.dump(self.data, f, indent=4)
+        self.update_count = 0
+
+    def save_memory(self):
+        self.update_count += 1
+        if self.update_count >= self.BUFFER_LIMIT:
+            self.flush_memory()
 
     def add_birthday(self, name, date):
         self.data["birthdays"][name] = date
