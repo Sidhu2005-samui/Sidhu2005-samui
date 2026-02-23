@@ -3,6 +3,8 @@ import sys
 import os
 import time
 import atexit
+import urllib.request
+import urllib.error
 
 class ChessModule:
     def __init__(self):
@@ -33,11 +35,29 @@ class ChessModule:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
-            time.sleep(2) # Wait for startup
 
-            if self.process.poll() is None:
+            # Poll for startup (max 5 seconds)
+            start_time = time.time()
+            server_ready = False
+            while time.time() - start_time < 5:
+                # Check if process died
+                if self.process.poll() is not None:
+                    break
+
+                try:
+                    with urllib.request.urlopen("http://127.0.0.1:5000/", timeout=1) as response:
+                        if response.status == 200:
+                            server_ready = True
+                            break
+                except (urllib.error.URLError, ConnectionError):
+                    pass
+
+                time.sleep(0.1)
+
+            if server_ready:
                 return "I've started the 3D Chess Game for you. Go to http://127.0.0.1:5000 to play!"
             else:
+                self.stop_server() # Ensure cleanup if failed
                 return "Something went wrong while starting the chess server."
         except Exception as e:
             return f"Error starting chess module: {str(e)}"
