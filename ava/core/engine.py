@@ -15,7 +15,7 @@ class AvaEngine:
         self.research = ResearchModule()
         self.chess = ChessModule()
 
-    def process_input(self, user_input):
+    async def process_input(self, user_input):
         user_input = user_input.strip()
         if not user_input:
             return "How can I help you today?"
@@ -35,7 +35,7 @@ class AvaEngine:
         if re.search(r'\bresearch\b|\bwhat is\b|\bsearch for\b|\btell me about\b', user_input, re.I):
             query = re.sub(r'research|what is|search for|tell me about', '', user_input, flags=re.I).strip()
             if query:
-                result = self.research.search(query)
+                result = await self.research.search(query)
                 return self.research.summarize(result)
             return "What should I research for you?"
 

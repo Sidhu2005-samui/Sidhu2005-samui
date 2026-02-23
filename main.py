@@ -1,7 +1,8 @@
 import sys
+import asyncio
 from ava.core.engine import AvaEngine
 
-def main():
+async def main():
     ava = AvaEngine()
     print("Ava: Hello! I'm Ava, your super capable personal AI assistant.")
     print("Ava: How can I help you today? (Type 'exit' or 'quit' to stop)")
@@ -10,7 +11,7 @@ def main():
     if len(sys.argv) > 1:
         query = " ".join(sys.argv[1:])
         print(f"User: {query}")
-        response = ava.process_input(query)
+        response = await ava.process_input(query)
         print(f"Ava: {response}")
         return
 
@@ -22,7 +23,7 @@ def main():
                 print("Ava: Goodbye! Have a great day.")
                 break
 
-            response = ava.process_input(user_input)
+            response = await ava.process_input(user_input)
             print(f"Ava: {response}")
         except KeyboardInterrupt:
             print("\nAva: Goodbye!")
@@ -31,4 +32,4 @@ def main():
             break
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
