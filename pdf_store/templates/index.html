@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital PDF Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Digital PDF Store</h1>
+        <p>Buy high-quality guides instantly.</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <div class="products-grid">
+            {% for id, product in products.items() %}
+            <div class="product-card">
+                <h2>{{ product.title }}</h2>
+                <p class="desc">{{ product.desc }}</p>
+                <p class="price">₹{{ product.price }}</p>
+                <form action="{{ url_for('initiate_payment') }}" method="POST">
+                    <input type="hidden" name="pdf_id" value="{{ id }}">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit">Buy Now</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

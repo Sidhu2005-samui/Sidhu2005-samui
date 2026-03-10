@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Successful!</h1>
+        <p>Thank you for purchasing <strong>{{ product.title }}</strong>.</p>
+        <p>Your order has been processed.</p>
+
+        <div class="download-section">
+            <a href="{{ download_link }}" class="btn">Download PDF Now</a>
+            <p><small>A copy of the download link has been sent to your email.</small></p>
+        </div>
+
+        <br><br>
+        <a href="{{ url_for('index') }}">Back to Store</a>
+    </div>
+</body>
+</html>
