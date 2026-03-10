@@ -23,14 +23,13 @@ class ChessAI:
             return 0
 
         evaluation = 0
-        for square in chess.SQUARES:
+        for square in chess.scan_reversed(board.occupied):
             piece = board.piece_at(square)
-            if piece:
-                value = self.piece_values[piece.piece_type]
-                if piece.color == chess.WHITE:
-                    evaluation += value
-                else:
-                    evaluation -= value
+            value = self.piece_values[piece.piece_type]
+            if piece.color == chess.WHITE:
+                evaluation += value
+            else:
+                evaluation -= value
 
         # Simple positional heuristic: Central control (bonus for pieces in center)
         # Center squares: e4, d4, e5, d5 (28, 27, 36, 35)
