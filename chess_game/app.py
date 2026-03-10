@@ -3,6 +3,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import chess
 from game_logic import ChessAI
 import os
+import eventlet
+import eventlet.tpool
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
@@ -93,8 +95,11 @@ def on_ai_move(data):
     if room in games:
         board = games[room]['board']
         if not board.is_game_over():
-            best_move = ai.get_best_move(board, depth=difficulty)
-            if best_move:
+            # Offload CPU-intensive task to a worker thread
+            board_copy = board.copy()
+            best_move = eventlet.tpool.execute(ai.get_best_move, board_copy, depth=difficulty)
+
+            if best_move and best_move in board.legal_moves:
                 board.push(best_move)
                 game_over = board.is_game_over()
                 result = board.result() if game_over else None
@@ -120,7 +125,10 @@ def on_hint(data):
     if room in games:
         board = games[room]['board']
         if not board.is_game_over():
-            best_move = ai.get_best_move(board, depth=3)
+            # Offload CPU-intensive task to a worker thread
+            board_copy = board.copy()
+            best_move = eventlet.tpool.execute(ai.get_best_move, board_copy, depth=3)
+
             if best_move:
                 emit('hint_result', {'move': best_move.uci()}, room=request.sid)
 
