@@ -1,0 +1,6 @@
+app_store.db
+test_app_store.db
+uploads/
+static/icons/
+static/screenshots/
+__pycache__/

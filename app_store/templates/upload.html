@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}Developer Portal - Upload App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-0 p-5">
+            <h2 class="fw-bold text-center mb-4">Developer Portal</h2>
+            <form id="upload-form">
+                <div class="mb-3">
+                    <label class="form-label">App Name</label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Package Name (e.g. com.example.app)</label>
+                    <input type="text" class="form-control" name="package_name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Version</label>
+                    <input type="text" class="form-control" name="version" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category">
+                        <option value="Games">Games</option>
+                        <option value="Tools">Tools</option>
+                        <option value="Social">Social</option>
+                        <option value="Productivity">Productivity</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">APK File</label>
+                    <input type="file" class="form-control" name="apk" accept=".apk" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Icon Image</label>
+                    <input type="file" class="form-control" name="icon" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow">Upload App</button>
+            </form>
+            <div id="upload-status" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('upload-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const statusDiv = document.getElementById('upload-status');
+        statusDiv.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+
+        const response = await fetch('/api/apps', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            statusDiv.innerHTML = '<div class="alert alert-success">App uploaded successfully! <a href="/">Go to Store</a></div>';
+            e.target.reset();
+        } else {
+            statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${result.error}</div>`;
+        }
+    };
+</script>
+{% endblock %}

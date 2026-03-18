@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}Signup - App Store Clone{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow border-0 p-5">
+            <h2 class="fw-bold text-center mb-4">Create Account</h2>
+            <form id="signup-form">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email (Optional)</label>
+                    <input type="email" class="form-control" name="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow">Signup</button>
+            </form>
+            <div id="signup-status" class="mt-3"></div>
+            <p class="text-center mt-3">Already have an account? <a href="/login">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('signup-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        const statusDiv = document.getElementById('signup-status');
+
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            statusDiv.innerHTML = '<div class="alert alert-success">Account created successfully! Redirecting to login...</div>';
+            setTimeout(() => { window.location.href = '/login'; }, 1500);
+        } else {
+            statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${result.error}</div>`;
+        }
+    };
+</script>
+{% endblock %}

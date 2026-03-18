@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block title %}App Details - App Store Clone{% endblock %}
+
+{% block content %}
+<div class="card shadow border-0 p-4 mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-2 text-center">
+            <img id="app-icon" src="/static/default-icon.png" class="app-icon shadow rounded" alt="App Icon" style="width: 128px; height: 128px;">
+        </div>
+        <div class="col-md-7">
+            <h1 id="app-name" class="display-6 fw-bold">Loading...</h1>
+            <p id="app-category" class="text-primary fw-semibold mb-2"></p>
+            <p id="app-version" class="text-muted"></p>
+            <div id="app-rating" class="text-warning mb-0 fs-5"></div>
+        </div>
+        <div class="col-md-3 text-end">
+            <a id="download-btn" href="#" class="btn btn-success btn-lg px-4 shadow">Download APK</a>
+            <p id="download-count" class="text-muted small mt-2"></p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Description</h4>
+            <p id="app-description" class="lead text-secondary"></p>
+        </div>
+
+        <div class="card shadow border-0 p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0">Reviews</h4>
+                {% if session.get('user_id') %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">Write a Review</button>
+                {% else %}
+                    <a href="/login" class="btn btn-outline-primary">Login to Review</a>
+                {% endif %}
+            </div>
+            <div id="reviews-list">
+                <!-- Reviews go here -->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow border-0 p-4 mb-4 bg-primary text-white text-center">
+            <h5 class="fw-bold mb-3">Share this App</h5>
+            <p class="small">Help your friends find awesome tools and games!</p>
+            <button class="btn btn-light w-100">Copy Link</button>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Write a Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="review-form">
+            <div class="mb-3">
+                <label class="form-label">Rating (1-5)</label>
+                <select class="form-select" id="rating-input">
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - Okay</option>
+                    <option value="2">2 - Bad</option>
+                    <option value="1">1 - Terrible</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comment</label>
+                <textarea class="form-control" id="comment-input" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    const app_id = {{ app_id }};
+
+    async function loadAppDetails() {
+        const response = await fetch(`/api/apps/${app_id}`);
+        const app = await response.json();
+
+        document.getElementById('app-name').innerText = app.name;
+        document.getElementById('app-category').innerText = app.category || 'General';
+        document.getElementById('app-version').innerText = `Version: ${app.version}`;
+        document.getElementById('app-description').innerText = app.description || 'No description provided.';
+        document.getElementById('app-icon').src = app.icon_url || '/static/default-icon.png';
+        document.getElementById('download-btn').href = app.download_url;
+        document.getElementById('download-count').innerText = `${app.downloads_count} Downloads`;
+
+        const reviewsList = document.getElementById('reviews-list');
+        if (app.reviews.length === 0) {
+            reviewsList.innerHTML = '<p class="text-muted">No reviews yet.</p>';
+        } else {
+            reviewsList.innerHTML = app.reviews.map(r => `
+                <div class="border-bottom py-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="fw-bold text-dark">${r.username}</span>
+                        <span class="text-warning">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+                    </div>
+                    <p class="small text-secondary m-0">${r.comment}</p>
+                </div>
+            `).join('');
+        }
+    }
+
+    document.getElementById('review-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const response = await fetch(`/api/apps/${app_id}/reviews`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                rating: document.getElementById('rating-input').value,
+                comment: document.getElementById('comment-input').value
+            })
+        });
+
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
+            loadAppDetails();
+        } else {
+            alert('Error submitting review');
+        }
+    };
+
+    window.onload = loadAppDetails;
+</script>
+{% endblock %}
