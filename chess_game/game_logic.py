@@ -13,13 +13,13 @@ class ChessAI:
         }
 
     def evaluate_board(self, board):
-        if board.is_checkmate():
-            if board.turn:
-                return -99999  # Black wins (White to move and checkmated)
-            else:
-                return 99999   # White wins
-
-        if board.is_stalemate() or board.is_insufficient_material():
+        outcome = board.outcome(claim_draw=False)
+        if outcome:
+            if outcome.termination == chess.Termination.CHECKMATE:
+                if outcome.winner == chess.WHITE:
+                    return 99999
+                else:
+                    return -99999
             return 0
 
         evaluation = 0
