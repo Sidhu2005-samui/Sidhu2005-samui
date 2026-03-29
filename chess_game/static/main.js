@@ -100,106 +100,121 @@ function createBoard() {
     boardGroup.add(border);
 }
 
+// Helper to create points for LatheGeometry
+function createPoints(pointsArray) {
+    const points = [];
+    for (let i = 0; i < pointsArray.length; i++) {
+        points.push(new THREE.Vector2(pointsArray[i][0], pointsArray[i][1]));
+    }
+    return points;
+}
+
 function createPieceMesh(type, color) {
-    const material = new THREE.MeshPhongMaterial({ color: color });
+    const material = new THREE.MeshPhongMaterial({ color: color, flatShading: false });
     let mesh = new THREE.Group();
+    let geometry;
 
-    const baseGeom = new THREE.CylinderGeometry(3.5, 3.5, 1, 32);
-    const base = new THREE.Mesh(baseGeom, material);
-    base.position.y = 0.5;
-    base.castShadow = true;
-    mesh.add(base);
+    // Scale factor to fit in square
+    const s = 0.6;
 
-    if (type === 'p') {
-        const bodyGeom = new THREE.ConeGeometry(2.5, 6, 16);
-        const body = new THREE.Mesh(bodyGeom, material);
-        body.position.y = 4;
-        body.castShadow = true;
-        mesh.add(body);
-        const headGeom = new THREE.SphereGeometry(1.5, 16, 16);
-        const head = new THREE.Mesh(headGeom, material);
-        head.position.y = 7;
-        head.castShadow = true;
-        mesh.add(head);
+    if (type === 'p') { // Pawn
+        const points = createPoints([
+            [0, 0], [4*s, 0], [4*s, 2*s], [3*s, 3*s], [1.5*s, 4*s], // Base
+            [1.5*s, 10*s], // Stem
+            [2.5*s, 10*s], [2.5*s, 11*s], [1.5*s, 11*s], // Collar
+            [2.5*s, 13*s], [2.5*s, 14*s], [0, 15*s] // Head (Sphere-ish)
+        ]);
+        geometry = new THREE.LatheGeometry(points, 32);
     }
-    else if (type === 'r') {
-        const bodyGeom = new THREE.CylinderGeometry(2.5, 2.5, 6, 16);
-        const body = new THREE.Mesh(bodyGeom, material);
-        body.position.y = 4;
-        body.castShadow = true;
-        mesh.add(body);
-        const headGeom = new THREE.CylinderGeometry(3, 3, 2, 8);
-        const head = new THREE.Mesh(headGeom, material);
-        head.position.y = 7.5;
-        head.castShadow = true;
-        mesh.add(head);
+    else if (type === 'r') { // Rook
+        const points = createPoints([
+            [0,0], [4.5*s, 0], [4.5*s, 2*s], [4*s, 3*s], [3*s, 3*s], [2.5*s, 4*s], // Base
+            [2.5*s, 12*s], // Stem
+            [4*s, 13*s], [4*s, 16*s], [3*s, 16*s], [3*s, 14.5*s], [0, 14.5*s] // Top Turret
+        ]);
+        geometry = new THREE.LatheGeometry(points, 32);
     }
-    else if (type === 'n') {
-        const bodyGeom = new THREE.BoxGeometry(3, 7, 3);
-        const body = new THREE.Mesh(bodyGeom, material);
-        body.position.y = 4.5;
-        body.castShadow = true;
-        mesh.add(body);
-        const headGeom = new THREE.BoxGeometry(3, 2, 5);
-        const head = new THREE.Mesh(headGeom, material);
-        head.position.y = 8;
-        head.position.z = -1;
-        head.castShadow = true;
-        mesh.add(head);
+    else if (type === 'b') { // Bishop
+        const points = createPoints([
+            [0,0], [4.5*s, 0], [4.5*s, 2*s], [3.5*s, 3*s], [1.5*s, 4*s], // Base
+            [1.5*s, 11*s], // Stem
+            [3*s, 11*s], [3.5*s, 12*s], [3*s, 15*s], [0, 17*s] // Head
+            // Bishop cut detail omitted for simplicity
+        ]);
+        geometry = new THREE.LatheGeometry(points, 32);
     }
-    else if (type === 'b') {
-        const bodyGeom = new THREE.CylinderGeometry(1.5, 2.5, 7, 16);
-        const body = new THREE.Mesh(bodyGeom, material);
-        body.position.y = 4.5;
-        body.castShadow = true;
-        mesh.add(body);
-        const headGeom = new THREE.SphereGeometry(1, 16, 16);
-        const head = new THREE.Mesh(headGeom, material);
-        head.position.y = 8.5;
-        head.castShadow = true;
-        mesh.add(head);
-        const hatGeom = new THREE.ConeGeometry(2, 3, 16);
-        const hat = new THREE.Mesh(hatGeom, material);
-        hat.position.y = 7;
-        hat.castShadow = true;
-        mesh.add(hat);
+    else if (type === 'q') { // Queen
+        const points = createPoints([
+            [0,0], [5*s, 0], [5*s, 2*s], [4.5*s, 3*s], [4*s, 3*s], [2*s, 4*s], // Base
+            [2*s, 14*s], // Stem
+            [4*s, 15*s], [4.5*s, 16*s], [4.5*s, 17*s], [2*s, 17*s], // Collar
+            [0, 18*s] // Top Ball
+            // Crown detail omitted
+        ]);
+        geometry = new THREE.LatheGeometry(points, 32);
     }
-    else if (type === 'q') {
-        const bodyGeom = new THREE.CylinderGeometry(2, 3, 9, 16);
-        const body = new THREE.Mesh(bodyGeom, material);
-        body.position.y = 5.5;
-        body.castShadow = true;
-        mesh.add(body);
-        const headGeom = new THREE.SphereGeometry(2, 16, 16);
-        const head = new THREE.Mesh(headGeom, material);
-        head.position.y = 10.5;
-        head.castShadow = true;
-        mesh.add(head);
-        const crownGeom = new THREE.CylinderGeometry(3.5, 1.5, 1, 8, 1, true);
-        const crown = new THREE.Mesh(crownGeom, material);
-        crown.position.y = 10;
-        crown.castShadow = true;
-        mesh.add(crown);
+    else if (type === 'k') { // King
+        const points = createPoints([
+            [0,0], [5*s, 0], [5*s, 2*s], [4.5*s, 3*s], [4*s, 3*s], [2*s, 4*s], // Base
+            [2*s, 15*s], // Stem
+            [4*s, 16*s], [4.5*s, 17*s], [4.5*s, 18*s], [3*s, 18*s], // Collar
+            [0, 18*s]
+        ]);
+        geometry = new THREE.LatheGeometry(points, 32);
+
+        // Add Cross for King
+        const crossMat = material;
+        const vBar = new THREE.Mesh(new THREE.BoxGeometry(1*s, 4*s, 1*s), crossMat);
+        vBar.position.y = 19*s;
+        const hBar = new THREE.Mesh(new THREE.BoxGeometry(3*s, 1*s, 1*s), crossMat);
+        hBar.position.y = 19*s;
+
+        const piece = new THREE.Mesh(geometry, material);
+        piece.castShadow = true;
+
+        const group = new THREE.Group();
+        group.add(piece);
+        group.add(vBar);
+        group.add(hBar);
+
+        // Scale up group slightly to match scene scale
+        group.scale.set(1.2, 1.2, 1.2);
+        return group;
     }
-    else if (type === 'k') {
-        const bodyGeom = new THREE.CylinderGeometry(2.5, 3, 10, 16);
-        const body = new THREE.Mesh(bodyGeom, material);
-        body.position.y = 6;
-        body.castShadow = true;
-        mesh.add(body);
-        const vBarGeom = new THREE.BoxGeometry(1, 3, 1);
-        const vBar = new THREE.Mesh(vBarGeom, material);
-        vBar.position.y = 12;
-        vBar.castShadow = true;
-        mesh.add(vBar);
-        const hBarGeom = new THREE.BoxGeometry(2.5, 1, 1);
-        const hBar = new THREE.Mesh(hBarGeom, material);
-        hBar.position.y = 12;
-        hBar.castShadow = true;
-        mesh.add(hBar);
+    else if (type === 'n') { // Knight - Composed shapes
+         // Base (Lathe)
+         const points = createPoints([
+            [0,0], [4*s, 0], [4*s, 2*s], [3.5*s, 3*s], [2*s, 4*s], // Base
+            [2*s, 8*s], [0, 8*s]
+        ]);
+        const baseGeo = new THREE.LatheGeometry(points, 32);
+        const base = new THREE.Mesh(baseGeo, material);
+
+        // Body/Head (Box/Extrude simulation)
+        // Simple approximation with tilted cylinders/boxes
+        const bodyGeo = new THREE.BoxGeometry(3*s, 6*s, 4*s);
+        const body = new THREE.Mesh(bodyGeo, material);
+        body.position.y = 9*s;
+        body.rotation.x = -0.2;
+
+        const headGeo = new THREE.BoxGeometry(3*s, 3*s, 5*s);
+        const head = new THREE.Mesh(headGeo, material);
+        head.position.y = 11*s;
+        head.position.z = 2*s;
+        head.rotation.x = 0.2;
+
+        const group = new THREE.Group();
+        group.add(base);
+        group.add(body);
+        group.add(head);
+        group.scale.set(1.2, 1.2, 1.2);
+        return group;
     }
 
-    return mesh;
+    const piece = new THREE.Mesh(geometry, material);
+    piece.castShadow = true;
+    piece.scale.set(1.2, 1.2, 1.2);
+    return piece;
 }
 
 function drawPieces(fen) {
@@ -224,7 +239,16 @@ function drawPieces(fen) {
                 const x = (c * config.squareSize) - offset;
                 const z = (r * config.squareSize) - offset;
 
+                // Adjust Y position since LatheGeometry origin is at 0,0,0 (bottom center)
+                // Primitive cylinders were centered, so we adjusted.
+                // Lathe profile starts at y=0.
                 mesh.position.set(x, 0, z);
+
+                // Rotate Knights to face forward/backward?
+                if (type === 'n') {
+                    if (colorCode === 'w') mesh.rotation.y = Math.PI / 2; // Face black
+                    else mesh.rotation.y = -Math.PI / 2; // Face white
+                }
 
                 const square = String.fromCharCode(97+c) + (8-r);
                 mesh.userData = { piece: piece, square: square, isPiece: true };
